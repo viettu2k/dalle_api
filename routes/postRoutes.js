@@ -11,34 +11,39 @@ const router = express.Router();
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  secret_key: process.env.CLOUDINARY_API_SECRET_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
 });
 
-// GET ALL POSTS
-router.get('/', async (req, res) => {
+router.route('/').get(async (req, res) => {
   try {
     const posts = await Post.find({});
-
     res.status(200).json({ success: true, data: posts });
-  } catch (error) {
-    res.status(200).json({ success: false, message: error });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Fetching posts failed, please try again',
+    });
   }
 });
 
-// CREATE A POST
-router.post('/', async (req, res) => {
+router.route('/').post(async (req, res) => {
   try {
     const { name, prompt, photo } = req.body;
     const photoUrl = await cloudinary.uploader.upload(photo);
+
     const newPost = await Post.create({
       name,
       prompt,
       photo: photoUrl.url,
     });
 
-    res.status(201).json({ success: true, data: newPost });
-  } catch (error) {
-    res.status(500).json({ success: false, messsage: error });
+    res.status(200).json({ success: true, data: newPost });
+  } catch (err) {
+    console.log('🚀 ~ file: postRoutes.js:42 ~ router.route ~ err:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Unable to create a post, please try again',
+    });
   }
 });
 

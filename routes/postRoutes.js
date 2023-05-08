@@ -39,7 +39,6 @@ router.route('/').post(async (req, res) => {
 
     res.status(200).json({ success: true, data: newPost });
   } catch (err) {
-    console.log('🚀 ~ file: postRoutes.js:42 ~ router.route ~ err:', err);
     res.status(500).json({
       success: false,
       message: 'Unable to create a post, please try again',
